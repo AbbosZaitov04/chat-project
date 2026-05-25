@@ -62,48 +62,28 @@
     button:hover {
       background: #45a049;
     }
-
-    #chatSection {
-      display: none;
-    }
   </style>
 </head>
 <body>
 
   <div class="container">
 
-    <div id="joinSection">
-      <h2>Join Chat Room</h2>
+    <h2>Global Chat</h2>
 
-      <input
-        type="text"
-        id="roomInput"
-        placeholder="Enter room link or name"
-      />
+    <div id="messages"></div>
 
-      <button id="joinBtn">Join</button>
-    </div>
+    <input
+      type="text"
+      id="messageInput"
+      placeholder="Type a message..."
+    />
 
-    <div id="chatSection">
-      <h2 id="roomTitle"></h2>
-
-      <div id="messages"></div>
-
-      <input
-        type="text"
-        id="messageInput"
-        placeholder="Type a message..."
-      />
-
-      <button id="sendBtn">Send</button>
-    </div>
+    <button id="sendBtn">Send</button>
 
   </div>
 
-  <!-- Socket.IO client -->
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-  <!-- Your JS -->
   <script src="script.js"></script>
 
 </body>
