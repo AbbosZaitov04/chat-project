@@ -4,8 +4,38 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
+app.use(express.json());
 
 const server = http.createServer(app);
+
+app.post("/register", async (req, res) => {
+
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({
+      error: "Username and password required"
+    });
+  }
+
+  try {
+
+    await pool.query(
+      "INSERT INTO users(username, password) VALUES($1, $2)",
+      [username, password]
+    );
+
+    res.json({
+      success: true
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      error: "Username may already exist"
+    });
+  }
+});
 
 const io = new Server(server, {
   cors: {

@@ -1,56 +1,61 @@
-const socket = io("https://chat-project-ftla.onrender.com");
+const registerBtn = document.getElementById("registerBtn");
 
-const messages = document.getElementById("messages");
-const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
+const usernameInput = document.getElementById("username");
 
-// Send message
-sendBtn.addEventListener("click", sendMessage);
+const passwordInput = document.getElementById("password");
 
-messageInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    sendMessage();
+const statusText = document.getElementById("status");
+
+registerBtn.addEventListener("click", register);
+
+async function register() {
+
+  const username = usernameInput.value.trim();
+
+  const password = passwordInput.value.trim();
+
+  if (!username || !password) {
+
+    statusText.textContent =
+      "Fill all fields";
+
+    return;
   }
-});
 
-function sendMessage() {
+  try {
 
-  const text = messageInput.value.trim();
+    const response = await fetch(
+      "https://chat-project-ftla.onrender.com/register",
+      {
+        method: "POST",
 
-  if (text === "") return;
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-  socket.emit("chat-message", text);
+        body: JSON.stringify({
+          username,
+          password
+        })
+      }
+    );
 
-  messageInput.value = "";
+    const data = await response.json();
+
+    if (data.success) {
+
+      statusText.textContent =
+        "Account created successfully";
+
+    } else {
+
+      statusText.textContent =
+        data.error || "Error";
+    }
+
+  } catch (err) {
+
+    statusText.textContent =
+      "Server error";
+  }
 }
-
-// Receive messages
-socket.on("chat-message", (message) => {
-
-  const div = document.createElement("div");
-
-  div.classList.add("message");
-
-  div.textContent = message;
-
-  messages.appendChild(div);
-
-  messages.scrollTop = messages.scrollHeight;
-});
-socket.on("load-messages", (messagesData) => {
-
-  messages.innerHTML = "";
-
-  messagesData.forEach((msg) => {
-
-    const div = document.createElement("div");
-
-    div.classList.add("message");
-
-    div.textContent = msg.text;
-
-    messages.appendChild(div);
-  });
-
-  messages.scrollTop = messages.scrollHeight;
-});
