@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Simple Chat</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      width: 400px;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    #messages {
+      height: 300px;
+      overflow-y: auto;
+      border: 1px solid #333;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: #181818;
+    }
+
+    .message {
+      margin-bottom: 8px;
+      padding: 8px;
+      background: #2b2b2b;
+      border-radius: 5px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      box-sizing: border-box;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      background: #4caf50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #45a049;
+    }
+
+    #chatSection {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <div id="joinSection">
+      <h2>Join Chat Room</h2>
+
+      <input
+        type="text"
+        id="roomInput"
+        placeholder="Enter room link or name"
+      />
+
+      <button id="joinBtn">Join</button>
+    </div>
+
+    <div id="chatSection">
+      <h2 id="roomTitle"></h2>
+
+      <div id="messages"></div>
+
+      <input
+        type="text"
+        id="messageInput"
+        placeholder="Type a message..."
+      />
+
+      <button id="sendBtn">Send</button>
+    </div>
+
+  </div>
+
+  <!-- Socket.IO client -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+  <!-- Your JS -->
+  <script src="script.js"></script>
+
+</body>
+</html>
