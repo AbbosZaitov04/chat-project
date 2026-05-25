@@ -40,6 +40,33 @@
       border-radius: 5px;
     }
 
+    .hidden {
+      display: none;
+    }
+
+    #chatForm {
+      display: flex;
+      gap: 8px;
+    }
+
+    #chatInput {
+      margin-bottom: 0;
+    }
+
+    #sendBtn {
+      width: auto;
+      min-width: 80px;
+    }
+
+    #status {
+      min-height: 20px;
+    }
+
+    #currentUser {
+      color: #bdbdbd;
+      margin-top: -8px;
+    }
+
     input {
       width: 100%;
       padding: 10px;
@@ -68,28 +95,58 @@
 
   <div class="container">
 
-    <h1>Register</h1>
+    <div id="registerView">
 
-    <input
-      type="text"
-      id="username"
-      placeholder="Username"
-    >
+      <h1>Register</h1>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Password"
-    >
+      <input
+        type="text"
+        id="username"
+        placeholder="Username"
+      >
 
-    <button id="registerBtn">
-      Register
-    </button>
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      >
 
-    <p id="status"></p>
+      <button id="registerBtn">
+        Register
+      </button>
+
+      <p id="status"></p>
+
+    </div>
+
+    <div id="chatView" class="hidden">
+
+      <h1>Chat</h1>
+
+      <p id="currentUser"></p>
+
+      <div id="messages"></div>
+
+      <form id="chatForm">
+
+        <input
+          type="text"
+          id="chatInput"
+          placeholder="Message"
+          autocomplete="off"
+        >
+
+        <button id="sendBtn" type="submit">
+          Send
+        </button>
+
+      </form>
+
+    </div>
 
   </div>
 
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="script.js"></script>
 
 </body>

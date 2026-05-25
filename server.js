@@ -18,6 +18,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+app.use(express.static(__dirname));
 
 const server = http.createServer(app);
 
@@ -63,22 +64,24 @@ const pool = new Pool({
   }
 });
 
-pool.query(`
-  CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+async function initDatabase() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      username TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
 
-pool.query(`
-  CREATE TABLE IF NOT EXISTS messages (
-    id SERIAL PRIMARY KEY,
-    text TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS messages (
+      id SERIAL PRIMARY KEY,
+      text TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+}
 
 io.on("connection", async (socket) => {
 
@@ -111,7 +114,12 @@ socket.on("chat-message", async (message) => {
 
 const port = process.env.PORT || 3000;
 
-server.listen(port, () => {
+initDatabase().then(() => {
+  server.listen(port, () => {
 
-  console.log(`Server running on port ${port}`);
+    console.log(`Server running on port ${port}`);
+  });
+}).catch((err) => {
+  console.error("Failed to initialize database", err);
+  process.exit(1);
 });
