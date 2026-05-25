@@ -31,6 +31,11 @@ pool.query(`
 io.on("connection", async (socket) => {
 
   console.log("User connected");
+  const result = await pool.query(
+  "SELECT * FROM messages ORDER BY id ASC"
+);
+
+socket.emit("load-messages", result.rows);
 
 socket.on("chat-message", async (message) => {
 
