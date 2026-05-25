@@ -1,4 +1,4 @@
-const socket = io("http://localhost:3000");
+const socket = io("https://chat-project-ftla.onrender.com");
 
 const messages = document.getElementById("messages");
 const messageInput = document.getElementById("messageInput");
