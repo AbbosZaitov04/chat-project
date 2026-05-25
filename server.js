@@ -12,38 +12,24 @@ const io = new Server(server, {
   }
 });
 
-// When user connects
 io.on("connection", (socket) => {
 
   console.log("User connected");
 
-  // Join room
-  socket.on("join-room", (room) => {
+  socket.on("chat-message", (message) => {
 
-    socket.join(room);
+    console.log(message);
 
-    console.log(`User joined room: ${room}`);
+    // Send to EVERYONE
+    io.emit("chat-message", message);
   });
 
-  // Receive message
-  socket.on("chat-message", (data) => {
-
-    console.log(data);
-
-    // Send message to everyone in room
-    io.to(data.room).emit("chat-message", {
-      message: data.message
-    });
-  });
-
-  // Disconnect
   socket.on("disconnect", () => {
 
     console.log("User disconnected");
   });
 });
 
-// Start server
 server.listen(3000, () => {
 
   console.log("Server running on port 3000");

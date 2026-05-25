@@ -1,41 +1,8 @@
-// Connect to backend server
 const socket = io("http://localhost:3000");
 
-// HTML elements
-const joinSection = document.getElementById("joinSection");
-const chatSection = document.getElementById("chatSection");
-
-const roomInput = document.getElementById("roomInput");
-const joinBtn = document.getElementById("joinBtn");
-
-const roomTitle = document.getElementById("roomTitle");
-
 const messages = document.getElementById("messages");
-
 const messageInput = document.getElementById("messageInput");
 const sendBtn = document.getElementById("sendBtn");
-
-// Current room
-let currentRoom = "";
-
-// Join room
-joinBtn.addEventListener("click", () => {
-
-  const room = roomInput.value.trim();
-
-  if (room === "") return;
-
-  currentRoom = room;
-
-  // Tell server to join room
-  socket.emit("join-room", room);
-
-  // Update UI
-  roomTitle.textContent = `Room: ${room}`;
-
-  joinSection.style.display = "none";
-  chatSection.style.display = "block";
-});
 
 // Send message
 sendBtn.addEventListener("click", sendMessage);
@@ -52,26 +19,21 @@ function sendMessage() {
 
   if (text === "") return;
 
-  // Send to server
-  socket.emit("chat-message", {
-    room: currentRoom,
-    message: text
-  });
+  socket.emit("chat-message", text);
 
   messageInput.value = "";
 }
 
-// Receive message from server
-socket.on("chat-message", (data) => {
+// Receive messages
+socket.on("chat-message", (message) => {
 
   const div = document.createElement("div");
 
   div.classList.add("message");
 
-  div.textContent = data.message;
+  div.textContent = message;
 
   messages.appendChild(div);
 
-  // Auto scroll
   messages.scrollTop = messages.scrollHeight;
 });
