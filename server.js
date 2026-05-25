@@ -1,3 +1,4 @@
+const { Pool } = require("pg");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -12,17 +13,38 @@ const io = new Server(server, {
   }
 });
 
-io.on("connection", (socket) => {
+const pool = new Pool({
+  connectionString: "postgresql://chatuser:3XTynvGbC4XYVzF9znP4ojNU1Uo90cPR@dpg-d89vbabbc2fs73fk4tr0-a.frankfurt-postgres.render.com/chatdb_m4bt",
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
+
+pool.query(`
+  CREATE TABLE IF NOT EXISTS messages (
+    id SERIAL PRIMARY KEY,
+    text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+io.on("connection", async (socket) => {
 
   console.log("User connected");
 
-  socket.on("chat-message", (message) => {
+socket.on("chat-message", async (message) => {
 
-    console.log(message);
+  console.log(message);
 
-    // Send to EVERYONE
-    io.emit("chat-message", message);
-  });
+  // Save message into database
+  await pool.query(
+    "INSERT INTO messages(text) VALUES($1)",
+    [message]
+  );
+
+  // Send message to everyone
+  io.emit("chat-message", message);
+});
 
   socket.on("disconnect", () => {
 

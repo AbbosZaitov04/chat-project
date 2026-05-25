@@ -37,3 +37,20 @@ socket.on("chat-message", (message) => {
 
   messages.scrollTop = messages.scrollHeight;
 });
+socket.on("load-messages", (messagesData) => {
+
+  messages.innerHTML = "";
+
+  messagesData.forEach((msg) => {
+
+    const div = document.createElement("div");
+
+    div.classList.add("message");
+
+    div.textContent = msg.text;
+
+    messages.appendChild(div);
+  });
+
+  messages.scrollTop = messages.scrollHeight;
+});
