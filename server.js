@@ -4,6 +4,19 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const app = express();
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(204);
+  }
+
+  next();
+});
+
 app.use(express.json());
 
 const server = http.createServer(app);
@@ -44,11 +57,20 @@ const io = new Server(server, {
 });
 
 const pool = new Pool({
-  connectionString: "postgresql://chatuser:3XTynvGbC4XYVzF9znP4ojNU1Uo90cPR@dpg-d89vbabbc2fs73fk4tr0-a.frankfurt-postgres.render.com/chatdb_m4bt",
+  connectionString: process.env.DATABASE_URL || "postgresql://chatuser:3XTynvGbC4XYVzF9znP4ojNU1Uo90cPR@dpg-d89vbabbc2fs73fk4tr0-a.frankfurt-postgres.render.com/chatdb_m4bt",
   ssl: {
     rejectUnauthorized: false
   }
 });
+
+pool.query(`
+  CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`);
 
 pool.query(`
   CREATE TABLE IF NOT EXISTS messages (
@@ -87,7 +109,9 @@ socket.on("chat-message", async (message) => {
   });
 });
 
-server.listen(3000, () => {
+const port = process.env.PORT || 3000;
 
-  console.log("Server running on port 3000");
+server.listen(port, () => {
+
+  console.log(`Server running on port ${port}`);
 });

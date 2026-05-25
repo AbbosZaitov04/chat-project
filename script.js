@@ -6,6 +6,8 @@ const passwordInput = document.getElementById("password");
 
 const statusText = document.getElementById("status");
 
+const API_BASE_URL = "https://chat-project-ftla.onrender.com";
+
 registerBtn.addEventListener("click", register);
 
 async function register() {
@@ -24,8 +26,11 @@ async function register() {
 
   try {
 
+    registerBtn.disabled = true;
+    statusText.textContent = "Creating account...";
+
     const response = await fetch(
-      "https://chat-project-ftla.onrender.com/register",
+      `${API_BASE_URL}/register`,
       {
         method: "POST",
 
@@ -57,5 +62,8 @@ async function register() {
 
     statusText.textContent =
       "Server error";
+  } finally {
+
+    registerBtn.disabled = false;
   }
 }
