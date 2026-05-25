@@ -77,9 +77,15 @@ async function initDatabase() {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS messages (
       id SERIAL PRIMARY KEY,
+      username TEXT NOT NULL DEFAULT 'Unknown',
       text TEXT NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
+  `);
+
+  await pool.query(`
+    ALTER TABLE messages
+    ADD COLUMN IF NOT EXISTS username TEXT NOT NULL DEFAULT 'Unknown'
   `);
 }
 
@@ -96,14 +102,31 @@ socket.on("chat-message", async (message) => {
 
   console.log(message);
 
+  const username =
+    typeof message === "object" && message.username
+      ? message.username
+      : "Unknown";
+
+  const text =
+    typeof message === "object" && message.text
+      ? message.text
+      : message;
+
+  if (!text) {
+    return;
+  }
+
   // Save message into database
   await pool.query(
-    "INSERT INTO messages(text) VALUES($1)",
-    [message]
+    "INSERT INTO messages(username, text) VALUES($1, $2)",
+    [username, text]
   );
 
   // Send message to everyone
-  io.emit("chat-message", message);
+  io.emit("chat-message", {
+    username,
+    text
+  });
 });
 
   socket.on("disconnect", () => {

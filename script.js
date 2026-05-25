@@ -9,8 +9,12 @@ const messages = document.getElementById("messages");
 const chatForm = document.getElementById("chatForm");
 const chatInput = document.getElementById("chatInput");
 
-const API_BASE_URL = "https://chat-project-ftla.onrender.com";
+const API_BASE_URL =
+  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? window.location.origin
+    : "https://chat-project-ftla.onrender.com";
 let socket;
+let currentUsername = "";
 
 registerBtn.addEventListener("click", register);
 passwordInput.addEventListener("keydown", (event) => {
@@ -78,6 +82,7 @@ async function register() {
 }
 
 function openChat(username) {
+  currentUsername = username;
   registerView.classList.add("hidden");
   chatView.classList.remove("hidden");
   currentUser.textContent = `Signed in as ${username}`;
@@ -91,7 +96,7 @@ function openChat(username) {
   socket.on("load-messages", (loadedMessages) => {
     messages.innerHTML = "";
     loadedMessages.forEach((message) => {
-      addMessage(message.text);
+      addMessage(message);
     });
   });
 
@@ -101,20 +106,36 @@ function openChat(username) {
 function sendMessage(event) {
   event.preventDefault();
 
-  const message = chatInput.value.trim();
+  const text = chatInput.value.trim();
 
-  if (!message || !socket) {
+  if (!text || !socket) {
     return;
   }
 
-  socket.emit("chat-message", message);
+  socket.emit("chat-message", {
+    username: currentUsername,
+    text
+  });
   chatInput.value = "";
 }
 
-function addMessage(text) {
+function addMessage(message) {
+  const username = message.username || "Unknown";
+  const text = message.text || message;
+
   const messageElement = document.createElement("div");
   messageElement.className = "message";
-  messageElement.textContent = text;
+
+  const authorElement = document.createElement("div");
+  authorElement.className = "message-author";
+  authorElement.textContent = username;
+
+  const textElement = document.createElement("div");
+  textElement.className = "message-text";
+  textElement.textContent = text;
+
+  messageElement.appendChild(authorElement);
+  messageElement.appendChild(textElement);
   messages.appendChild(messageElement);
   messages.scrollTop = messages.scrollHeight;
 }
